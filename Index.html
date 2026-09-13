@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Ride</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14211E;
+    --paper:#F4F1E8;
+    --paper-2:#EAE5D6;
+    --yellow:#F2B705;
+    --yellow-dark:#C4930A;
+    --green:#1F5C4D;
+    --slate:#57645F;
+    --line: rgba(20,33,30,0.16);
+    --line-strong: rgba(20,33,30,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,.num{font-family:'Space Grotesk', sans-serif;}
+  a{color:inherit;}
+
+  .wrap{max-width:980px; margin:0 auto; padding:0 24px;}
+
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+    background:var(--ink);
+    color:var(--paper);
+  }
+  header.top .wrap{
+    display:flex; justify-content:space-between; align-items:baseline;
+    flex-wrap:wrap; gap:8px;
+  }
+  .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700; font-size:1.15rem;
+  }
+  .brand span{color:var(--yellow);}
+  .top-meta{font-size:0.85rem; opacity:0.75;}
+
+  .hero{padding:56px 0 40px;}
+  .hero h1{
+    font-size:clamp(2rem, 4.2vw, 3rem);
+    font-weight:600; line-height:1.08;
+    margin:0 0 18px; max-width:15ch;
+  }
+  .hero p{max-width:54ch; color:var(--slate); font-size:1.05rem; margin:0;}
+
+  .ticket{
+    display:grid;
+    grid-template-columns: 1fr 1.1fr;
+    border:1px solid var(--line-strong);
+    background:var(--paper);
+    margin-bottom:64px;
+  }
+  @media (max-width: 760px){
+    .ticket{grid-template-columns:1fr;}
+    .route-panel{border-right:none; border-bottom:1px dashed var(--line-strong);}
+  }
+
+  .route-panel{
+    border-right:1px dashed var(--line-strong);
+    padding:32px;
+  }
+  .route-panel h2, .order-form h2{
+    font-size:0.78rem; font-weight:600; letter-spacing:0.04em;
+    color:var(--slate); margin:0 0 20px;
+  }
+
+  /* stop markers */
+  .stop{
+    display:flex;
+    gap:14px;
+    position:relative;
+  }
+  .stop .dot-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:14px;
+  }
+  .stop .dot{
+    width:11px; height:11px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    margin-top:6px;
+  }
+  .stop.drop .dot{
+    background:var(--yellow);
+    border-color:var(--yellow-dark);
+  }
+  .stop .connector{
+    flex:1;
+    width:2px;
+    background:repeating-linear-gradient(to bottom, var(--line-strong) 0 4px, transparent 4px 8px);
+    min-height:36px;
+  }
+  .stop .field{flex:1; margin-bottom:0; padding-bottom:22px;}
+  .stop:last-of-type .field{padding-bottom:0;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:0.82rem; color:var(--slate); margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;
+    border:1px solid var(--line-strong);
+    background:#fff;
+    padding:11px 12px;
+    font-family:'Inter', sans-serif;
+    font-size:0.95rem;
+    color:var(--ink);
+    border-radius:2px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:2px solid var(--yellow-dark);
+    outline-offset:1px;
+  }
+
+  .ride-types{margin-top:28px;}
+  .ride-row{
+    display:flex; align-items:center; gap:14px;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .ride-row:last-child{border-bottom:none;}
+  .ride-row input[type="radio"]{
+    appearance:none; -webkit-appearance:none;
+    width:18px; height:18px; min-width:18px;
+    border:1.5px solid var(--line-strong);
+    border-radius:50%;
+    position:relative; cursor:pointer;
+  }
+  .ride-row input[type="radio"]:checked{border-color:var(--yellow-dark);}
+  .ride-row input[type="radio"]:checked::after{
+    content:""; position:absolute; top:3px; left:3px;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--yellow-dark);
+  }
+  .ride-row .r-name{font-weight:500; font-size:0.95rem;}
+  .ride-row .r-desc{color:var(--slate); font-size:0.83rem; margin-top:2px;}
+  .ride-row .r-fare{margin-left:auto; font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.92rem; white-space:nowrap;}
+
+  .order-form{padding:32px;}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:420px){.row-2{grid-template-columns:1fr;}}
+
+  .summary-line{
+    display:flex; justify-content:space-between;
+    padding:14px 0;
+    border-top:1px dashed var(--line-strong);
+    margin-top:6px; font-size:0.95rem;
+  }
+  .summary-line .amt{font-family:'Space Grotesk', sans-serif; font-weight:600;}
+
+  .error-msg{font-size:0.82rem; color:#B23A2E; margin-top:-8px; margin-bottom:14px; display:none;}
+
+  button.send{
+    width:100%;
+    background:var(--green);
+    color:var(--paper);
+    border:none;
+    padding:15px 20px;
+    font-family:'Inter', sans-serif;
+    font-weight:600; font-size:0.98rem;
+    cursor:pointer; margin-top:8px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    transition:background 0.15s ease;
+    border-radius:2px;
+  }
+  button.send:hover{background:#164438;}
+  button.send svg{width:18px; height:18px; fill:var(--paper);}
+
+  .hint{font-size:0.78rem; color:var(--slate); margin-top:10px; line-height:1.5;}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:24px 0 40px;
+    color:var(--slate);
+    font-size:0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Sahi <span>Auto</span></div>
+    <div class="top-meta">Local rides, booked on WhatsApp</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>Book your ride, straight to WhatsApp</h1>
+    <p>Enter your pickup and drop, pick a ride type, and send it -- the driver gets your trip details on WhatsApp and confirms directly with you.</p>
+  </section>
+
+  <div class="ticket">
+    <div class="route-panel">
+      <h2>Your route</h2>
+
+      <div class="stop pickup">
+        <div class="dot-col">
+          <div class="dot"></div>
+          <div class="connector"></div>
+        </div>
+        <div class="field">
+          <label for="pickup">Pickup location</label>
+          <input type="text" id="pickup" placeholder="e.g. MG Road Metro Station" required>
+        </div>
+      </div>
+      <div class="stop drop">
+        <div class="dot-col">
+          <div class="dot"></div>
+        </div>
+        <div class="field">
+          <label for="drop">Drop location</label>
+          <input type="text" id="drop" placeholder="e.g. Whitefield Main Road" required>
+        </div>
+      </div>
+
+      <div class="ride-types" id="rideList"></div>
+    </div>
+
+    <div class="order-form">
+      <h2>Trip details</h2>
+      <form id="bookingForm">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" placeholder="Jordan Blake" required>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="phone">Your phone</label>
+            <input type="tel" id="phone" placeholder="0300 1234567" required>
+          </div>
+          <div class="field">
+            <label for="passengers">Passengers</label>
+            <select id="passengers">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4+</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" required>
+          </div>
+          <div class="field">
+            <label for="time">Pickup time</label>
+            <input type="time" id="time" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="notes">Anything the driver should know?</label>
+          <textarea id="notes" placeholder="Luggage, landmark, gate number, etc." rows="2"></textarea>
+        </div>
+        <div class="error-msg" id="errorMsg">Add pickup, drop, ride type, name, phone, date and time.</div>
+
+        <div class="summary-line">
+          <span>Ride: <strong id="selSummary">None yet</strong></span>
+          <span class="amt" id="selFare"></span>
+        </div>
+
+        <button type="submit" class="send">
+          <svg viewBox="0 0 24 24"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.03a7.94 7.94 0 0 0 5.52-13.6zm-5.55 12.2h-.02a6.6 6.6 0 0 1-3.37-.93l-.24-.14-2.5.65.66-2.44-.16-.25a6.62 6.62 0 0 1 10.4-8.18 6.55 6.55 0 0 1 1.95 4.7 6.62 6.62 0 0 1-6.72 6.59zm3.63-4.95c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.15-.43.05a5.4 5.4 0 0 1-1.6-.98 5.98 5.98 0 0 1-1.1-1.37c-.12-.2 0-.3.1-.4.1-.1.2-.23.31-.35.1-.11.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.39-.33-.33-.45-.34-.12 0-.25-.01-.38-.01a.74.74 0 0 0-.53.25c-.18.2-.7.68-.7 1.66 0 .98.72 1.93.82 2.06.1.13 1.4 2.14 3.4 3 .48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.16-.46.16-.86.11-.94-.05-.08-.18-.13-.38-.23z"/></svg>
+          Send trip request on WhatsApp
+        </button>
+        <p class="hint">Tapping send opens WhatsApp with your trip already written out -- hit send there to reach dispatch or your driver.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">Sahi Auto -- trip requests are confirmed by a driver, not auto-dispatched.</div>
+</footer>
+
+<script>
+  // ---- Configure your business here ----
+  const DISPATCH_WHATSAPP = "8903763714"; // country code + number, no + or spaces
+  const RIDE_TYPES = [
+    { id: "auto",   name: "Auto (3-seater)",  desc: "Best for 1–3 people, short trips", fare: "~$0.80/km" },
+  ];
+  // ---------------------------------------
+
+  const rideList = document.getElementById('rideList');
+  RIDE_TYPES.forEach((r, i) => {
+    const row = document.createElement('label');
+    row.className = 'ride-row';
+    row.innerHTML = `
+      <input type="radio" name="rideType" value="${r.id}" ${i === 0 ? 'checked' : ''}>
+      <span>
+        <span class="r-name">${r.name}</span>
+        <span class="r-desc">${r.desc}</span>
+      </span>
+      <span class="r-fare">${r.fare}</span>
+    `;
+    rideList.appendChild(row);
+  });
+  if (RIDE_TYPES.length){
+    document.getElementById('selSummary').textContent = RIDE_TYPES[0].name;
+    document.getElementById('selFare').textContent = RIDE_TYPES[0].fare;
+  }
+
+  const selSummary = document.getElementById('selSummary');
+  const selFare = document.getElementById('selFare');
+  rideList.addEventListener('change', (e) => {
+    const r = RIDE_TYPES.find(x => x.id === e.target.value);
+    if (r){
+      selSummary.textContent = r.name;
+      selFare.textContent = r.fare;
+    }
+  });
+
+  document.getElementById('bookingForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const errorEl = document.getElementById('errorMsg');
+    const ride = document.querySelector('input[name="rideType"]:checked');
+    const pickup = document.getElementById('pickup').value.trim();
+    const drop = document.getElementById('drop').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const passengers = document.getElementById('passengers').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!ride || !pickup || !drop || !name || !phone || !date || !time){
+      errorEl.style.display = 'block';
+      return;
+    }
+    errorEl.style.display = 'none';
+
+    const r = RIDE_TYPES.find(x => x.id === ride.value);
+    const lines = [
+      `New ride request`,
+      ``,
+      `Ride type: ${r.name} (${r.fare})`,
+      `Pickup: ${pickup}`,
+      `Drop: ${drop}`,
+      `Date & time: ${date} at ${time}`,
+      `Passengers: ${passengers}`,
+      `Name: ${name}`,
+      `Phone: ${phone}`,
+    ];
+    if (notes) lines.push(`Notes: ${notes}`);
+
+    const message = encodeURIComponent(lines.join('\n'));
+    const url = `https://wa.me/${DISPATCH_WHATSAPP}?text=${message}`;
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
